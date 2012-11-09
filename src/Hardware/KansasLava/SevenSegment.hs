@@ -89,11 +89,12 @@ divideClk _ clk = counter clk .==. (0 :: sig (Unsigned ix))
 divideClk_ :: forall c sig ix. (Clock c, sig ~ Signal c, Size ix) => Witness ix -> sig Bool
 divideClk_ w = divideClk w high
 
-counter :: (Rep a, Num a, Clock c, sig ~ Signal c) => sig Bool -> sig a
+counter :: (Rep a, Num a, Bounded a, Eq a, Clock c, sig ~ Signal c) => sig Bool -> sig a
 counter inc = loop
   where
     reg = register 0 loop
-    loop = mux inc (reg, reg + 1)
+    reg' = mux (reg .==. maxBound) (reg + 1, 0)
+    loop = mux inc (reg, reg')
 
 rotatorL :: (Clock c, sig ~ Signal c, Size ix, Integral ix) => sig Bool -> Matrix ix (sig Bool)
 rotatorL step = fromUnsigned loop
