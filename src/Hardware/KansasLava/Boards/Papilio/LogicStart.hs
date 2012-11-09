@@ -91,19 +91,20 @@ instance LogicStart Fabric where
 switchesP :: (LogicStart fabric)
           => fabric (Patch () (Matrix X8 (Seq Bool)) () (Matrix X8 ()))
 switchesP = do
-	sws <- switches
-	return (outputP sws $$
-	        backwardP (\ _mat -> ()) $$
-                matrixStackP (pure emptyP))
+    sws <- switches
+    return $
+      outputP sws $$
+      backwardP (\ _mat -> ()) $$
+      matrixStackP (pure emptyP)
 
 {-
 -- | 'buttonsP' gives a patch-level API for the toggle switches.
 buttonsP :: (LogicStart fabric)
          => fabric (Patch () Buttons () (Matrix X5 ()))
 buttonsP = do
-    sws <- buttons
+    btns <- buttons
     return $
-      outputP sws $$
+      outputP btns $$
       backwardP (\ _mat -> ()) $$
       matrixStackP (pure emptyP)
 -}
