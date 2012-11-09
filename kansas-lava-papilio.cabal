@@ -30,6 +30,7 @@ Library
         network
 
   Exposed-modules:
+        Hardware.KansasLava.SevenSegment
         Hardware.KansasLava.Boards.Papilio
         Hardware.KansasLava.Boards.Papilio.UCF
         Hardware.KansasLava.Boards.Papilio.LogicStart

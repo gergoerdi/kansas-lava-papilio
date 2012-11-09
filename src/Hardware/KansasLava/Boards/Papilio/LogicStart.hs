@@ -10,7 +10,7 @@ module Hardware.KansasLava.Boards.Papilio.LogicStart (
     , writeUCF
       -- * Data structures
     , Active(..)
-    , SevenSeg(..)
+    , SevenSegment(..)
     , Buttons(..)
       -- -- * Utilities for Board and Simulation use
     , switchesP
@@ -21,19 +21,12 @@ module Hardware.KansasLava.Boards.Papilio.LogicStart (
 import Language.KansasLava as KL
 import Hardware.KansasLava.Boards.Papilio
 import Hardware.KansasLava.Boards.Papilio.UCF
+import Hardware.KansasLava.SevenSegment
 
 import Data.Sized.Ix hiding (all)
 import Data.Sized.Matrix hiding (all)
 import Control.Applicative
 import Control.Monad (ap, liftM)
-
-data Active = ActiveHigh | ActiveLow
-
-data SevenSeg (active :: Active) n = SevenSeg
-    { ssAnodes :: Matrix n (Seq Bool)
-    , ssSegments :: Matrix X7 (Seq Bool)
-    , ssDecimalPoint :: Seq Bool
-    }
 
 data Buttons = Buttons
     { buttonUp, buttonDown
@@ -53,7 +46,7 @@ class Papilio fabric => LogicStart fabric where
    switches :: fabric (Matrix X8 (Seq Bool))
    buttons :: fabric Buttons
    leds :: Matrix X8 (Seq Bool) -> fabric ()
-   sseg :: SevenSeg ActiveLow X4 -> fabric ()
+   sseg :: SevenSegment CLK ActiveLow X4 -> fabric ()
 
 ------------------------------------------------------------
 -- initialization
@@ -85,7 +78,7 @@ instance LogicStart Fabric where
 
   leds inp = outStdLogicVector "LED" (pack inp :: Seq (Matrix X8 Bool))
 
-  sseg SevenSeg{..} = do
+  sseg SevenSegment{..} = do
       outStdLogicVector "SS_ANODES" (pack ssAnodes :: Seq (Matrix X4 Bool))
       outStdLogicVector "SS_SEGS" (pack ssSegments :: Seq (Matrix X7 Bool))
       outStdLogic "SS_DP" ssDecimalPoint
