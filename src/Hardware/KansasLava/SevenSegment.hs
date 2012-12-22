@@ -69,7 +69,7 @@ driveSS :: forall clk sig n. (Clock clk, sig ~ Signal clk, Size n, Rep n, Num n,
 driveSS segss = SevenSegment (bitNot <$> anodes) (bitNot <$> segs) high
   where
     clkAnode :: sig Bool
-    clkAnode = divideClk_ (Witness :: Witness X8)
+    clkAnode = divideClk (Witness :: Witness X4)
 
     selector :: sig n
     selector = counter clkAnode
@@ -83,11 +83,11 @@ driveSS segss = SevenSegment (bitNot <$> anodes) (bitNot <$> segs) high
     anodes :: Matrix n (sig Bool)
     anodes = fmap (.&&. clkAnode) $ rotatorL clkAnode
 
-divideClk :: forall c sig ix. (Clock c, sig ~ Signal c, Size ix) => Witness ix -> sig Bool -> sig Bool
-divideClk _ clk = counter clk .==. (0 :: sig (Unsigned ix))
+    anodes' :: Matrix n (sig Bool)
+    anodes' = Matrix.zipWith (.&&.) mask anodes
 
-divideClk_ :: forall c sig ix. (Clock c, sig ~ Signal c, Size ix) => Witness ix -> sig Bool
-divideClk_ w = divideClk w high
+divideClk :: forall c sig ix. (Clock c, sig ~ Signal c, Size ix) => Witness ix -> sig Bool
+divideClk _ = counter high .==. (0 :: sig (Unsigned ix))
 
 counter :: (Rep a, Num a, Bounded a, Eq a, Clock c, sig ~ Signal c) => sig Bool -> sig a
 counter inc = loop
