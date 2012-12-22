@@ -5,16 +5,19 @@
 module Hardware.KansasLava.SevenSegment
        ( Active(..)
        , SevenSegment(..)
+       , SSData
        , decodeHexSS
        , showSS
        , driveSS
+       , divideClk
        ) where
 
 import Language.KansasLava
-import Data.Sized.Matrix
+import Data.Sized.Matrix as Matrix
 import Data.Sized.Unsigned as Unsigned
 import Data.Bits
 import Control.Applicative
+import Data.Maybe (fromMaybe, isJust)
 
 data Active = ActiveHigh | ActiveLow
 
@@ -27,7 +30,9 @@ data SevenSegment clk (active :: Active) n = SevenSegment
 nary :: forall a clk sig n. (Clock clk, sig ~ Signal clk, Rep a, Size n, Rep n) => sig n -> Matrix n (sig a) -> sig a
 nary sel inps = pack inps .!. sel
 
-decodeHexSS :: Unsigned X4 -> Matrix X7 Bool
+type SSData = Matrix X7 Bool
+
+decodeHexSS :: Unsigned X4 -> SSData
 decodeHexSS n = matrix $ case n of
     --        a      b      c      d      e      f      g
     0x0 -> [  True,  True,  True,  True,  True,  True, False ]
@@ -48,7 +53,7 @@ decodeHexSS n = matrix $ case n of
     0xf -> [  True, False, False, False,  True,  True,  True ]
 
 -- For testing
-showSS :: Matrix X7 Bool -> String
+showSS :: SSData -> String
 showSS (toList -> [a, b, c, d, e, f, g])
   = unlines
     [ vpad   ++ horiz a ++ vpad
@@ -65,9 +70,22 @@ showSS (toList -> [a, b, c, d, e, f, g])
     horiz b = replicate 3 $ if b then '#' else ' '
     vert b = replicate 1 $ if b then '#' else ' '
 
-driveSS :: forall clk sig n. (Clock clk, sig ~ Signal clk, Size n, Rep n, Num n, Integral n) => Matrix n (Matrix X7 (sig Bool)) -> SevenSegment clk ActiveLow n
-driveSS segss = SevenSegment (bitNot <$> anodes) (bitNot <$> segs) high
+test :: SevenSegment CLK ActiveLow X4
+test = driveSS . matrix $
+       [ enabledS . pureS $ decodeHexSS 8
+       , disabledS
+       , enabledS . pureS $ decodeHexSS 4
+       , enabledS . pureS $ decodeHexSS 1
+       ]
+
+driveSS :: forall clk sig n. (Clock clk, sig ~ Signal clk, Size n, Rep n, Num n, Integral n)
+        => Matrix n (sig (Enabled SSData))
+        -> SevenSegment clk ActiveLow n
+driveSS segss = SevenSegment (bitNot <$> anodes') (bitNot <$> segs) high
   where
+    mask :: Matrix n (sig Bool)
+    mask = fmap isEnabled segss
+
     clkAnode :: sig Bool
     clkAnode = divideClk (Witness :: Witness X4)
 
@@ -75,13 +93,13 @@ driveSS segss = SevenSegment (bitNot <$> anodes) (bitNot <$> segs) high
     selector = counter clkAnode
 
     segss' :: Matrix X7 (Matrix n (sig Bool))
-    segss' = columns . joinRows $ segss
+    segss' = columns . joinRows $ fmap (unpack . enabledVal) $ segss
 
     segs :: Matrix X7 (sig Bool)
     segs = fmap (nary selector) segss'
 
     anodes :: Matrix n (sig Bool)
-    anodes = fmap (.&&. clkAnode) $ rotatorL clkAnode
+    anodes = (.&&. clkAnode) <$> rotatorL clkAnode
 
     anodes' :: Matrix n (sig Bool)
     anodes' = Matrix.zipWith (.&&.) mask anodes
