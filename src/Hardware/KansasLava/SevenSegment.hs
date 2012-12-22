@@ -8,12 +8,14 @@ module Hardware.KansasLava.SevenSegment
        , decodeHexSS
        , showSS
        , driveSS
+       , driveSS_
        ) where
 
 import Language.KansasLava
-import Data.Sized.Matrix
+import Data.Sized.Matrix as Matrix
 import Data.Sized.Unsigned as Unsigned
 import Data.Bits
+import Data.Maybe (isJust, fromMaybe)
 import Control.Applicative
 
 data Active = ActiveHigh | ActiveLow
@@ -65,8 +67,22 @@ showSS (toList -> [a, b, c, d, e, f, g])
     horiz b = replicate 3 $ if b then '#' else ' '
     vert b = replicate 1 $ if b then '#' else ' '
 
-driveSS :: forall clk sig n. (Clock clk, sig ~ Signal clk, Size n, Rep n, Num n, Integral n) => Matrix n (Matrix X7 (sig Bool)) -> SevenSegment clk ActiveLow n
-driveSS segss = SevenSegment (bitNot <$> anodes) (bitNot <$> segs) high
+driveSS_ :: forall clk sig n. (Clock clk, sig ~ Signal clk, Size n, Rep n, Num n, Integral n)
+         => Matrix n (Maybe (Matrix X7 (sig Bool)))
+         -> SevenSegment clk ActiveLow n
+driveSS_ segss = driveSS mask segss'
+  where
+    mask = fmap (pureS . isJust) segss
+    segss' = fmap (fromMaybe noSegs) segss
+
+    noSegs :: Matrix X7 (sig Bool)
+    noSegs = matrix $ replicate 7 low
+
+driveSS :: forall clk sig n. (Clock clk, sig ~ Signal clk, Size n, Rep n, Num n, Integral n)
+        => Matrix n (sig Bool)
+        -> Matrix n (Matrix X7 (sig Bool))
+        -> SevenSegment clk ActiveLow n
+driveSS mask segss = SevenSegment (bitNot <$> anodes) (bitNot <$> segs) high
   where
     clkAnode :: sig Bool
     clkAnode = divideClk (Witness :: Witness X4)
