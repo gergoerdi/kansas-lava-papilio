@@ -82,7 +82,7 @@ driveSS :: forall clk sig n. (Clock clk, sig ~ Signal clk, Size n, Rep n, Num n,
         => Matrix n (sig Bool)
         -> Matrix n (Matrix X7 (sig Bool))
         -> SevenSegment clk ActiveLow n
-driveSS mask segss = SevenSegment (bitNot <$> anodes) (bitNot <$> segs) high
+driveSS mask segss = SevenSegment (bitNot <$> anodes') (bitNot <$> segs) high
   where
     clkAnode :: sig Bool
     clkAnode = divideClk (Witness :: Witness X4)
