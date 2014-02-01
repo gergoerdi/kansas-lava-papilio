@@ -21,10 +21,10 @@ NET "BTN_LEFT"    LOC="P58"  | IOSTANDARD=LVTTL | DRIVE=8 | SLEW=FAST;
 NET "BTN_RIGHT"   LOC="P36"  | IOSTANDARD=LVTTL | DRIVE=8 | SLEW=FAST;
 
 # LEDs
-NET "LED(3)"      LOC="P35"  | IOSTANDARD=LVTTL;                                # A4
-NET "LED(2)"      LOC="P40"  | IOSTANDARD=LVTTL;                                # A5
-NET "LED(1)"      LOC="P53"  | IOSTANDARD=LVTTL;                                # A6
-NET "LED(0)"      LOC="P57"  | IOSTANDARD=LVTTL;                                # A7
+NET "LED<3>"      LOC="P35"  | IOSTANDARD=LVTTL;                                # A4
+NET "LED<2>"      LOC="P40"  | IOSTANDARD=LVTTL;                                # A5
+NET "LED<1>"      LOC="P53"  | IOSTANDARD=LVTTL;                                # A6
+NET "LED<0>"      LOC="P57"  | IOSTANDARD=LVTTL;                                # A7
 
 # VGA
 NET "VGA_R<0>"    LOC = "P61" | IOSTANDARD=LVTTL;
