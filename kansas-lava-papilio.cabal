@@ -30,6 +30,7 @@ Library
         network
 
   Exposed-modules:
+        Language.KansasLava.Signal.Utils
         Hardware.KansasLava.SevenSegment
         Hardware.KansasLava.VGA
         Hardware.KansasLava.Boards.Papilio

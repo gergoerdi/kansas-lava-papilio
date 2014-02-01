@@ -5,16 +5,16 @@
 module Hardware.KansasLava.SevenSegment
        ( Active(..)
        , SevenSegment(..)
-       , decodeHexSS
+       , encodeHexSS
        , showSS
        , driveSS
        , driveSS_
        ) where
 
 import Language.KansasLava
+import Language.KansasLava.Signal.Utils
 import Data.Sized.Matrix as Matrix
 import Data.Sized.Unsigned as Unsigned
-import Data.Bits
 import Data.Maybe (isJust, fromMaybe)
 import Control.Applicative
 
@@ -26,11 +26,8 @@ data SevenSegment clk (active :: Active) n = SevenSegment
     , ssDecimalPoint :: Signal clk Bool
     }
 
-nary :: forall a clk sig n. (Clock clk, sig ~ Signal clk, Rep a, Size n, Rep n) => sig n -> Matrix n (sig a) -> sig a
-nary sel inps = pack inps .!. sel
-
-decodeHexSS :: Unsigned X4 -> Matrix X7 Bool
-decodeHexSS n = matrix $ case n of
+encodeHexSS :: Unsigned X4 -> Matrix X7 Bool
+encodeHexSS n = matrix $ case n of
     --        a      b      c      d      e      f      g
     0x0 -> [  True,  True,  True,  True,  True,  True, False ]
     0x1 -> [ False,  True,  True, False, False, False, False ]
@@ -101,22 +98,3 @@ driveSS mask segss = SevenSegment (bitNot <$> anodes') (bitNot <$> segs) high
 
     anodes' :: Matrix n (sig Bool)
     anodes' = Matrix.zipWith (.&&.) mask anodes
-
-divideClk :: forall c sig ix. (Clock c, sig ~ Signal c, Size ix) => Witness ix -> sig Bool
-divideClk _ = counter high .==. (0 :: sig (Unsigned ix))
-
-counter :: (Rep a, Num a, Bounded a, Eq a, Clock c, sig ~ Signal c) => sig Bool -> sig a
-counter inc = loop
-  where
-    reg = register 0 loop
-    reg' = mux (reg .==. maxBound) (reg + 1, 0)
-    loop = mux inc (reg, reg')
-
-rotatorL :: (Clock c, sig ~ Signal c, Size ix, Integral ix) => sig Bool -> Matrix ix (sig Bool)
-rotatorL step = fromUnsigned loop
-  where
-    reg = register 1 loop
-    loop = mux step (reg, rotateL reg 1)
-
-fromUnsigned :: (sig ~ Signal c, Size ix) => sig (Unsigned ix) -> Matrix ix (sig Bool)
-fromUnsigned = unpack . coerce Unsigned.toMatrix
