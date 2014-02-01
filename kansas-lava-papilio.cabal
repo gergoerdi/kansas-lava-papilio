@@ -1,5 +1,5 @@
 Name:               kansas-lava-papilio
-Version:            0.0.1
+Version:            0.0.2
 Synopsis:           Kansas Lava support files for the Papilio FPGA board
 Description:
         IO definitions of the Papilio FPGA board and its Wings and MegaWings
@@ -31,6 +31,7 @@ Library
 
   Exposed-modules:
         Hardware.KansasLava.SevenSegment
+        Hardware.KansasLava.VGA
         Hardware.KansasLava.Boards.Papilio
         Hardware.KansasLava.Boards.Papilio.UCF
         Hardware.KansasLava.Boards.Papilio.LogicStart

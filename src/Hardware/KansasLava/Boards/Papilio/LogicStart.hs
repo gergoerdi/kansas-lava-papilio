@@ -1,6 +1,5 @@
-{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE DataKinds, KindSignatures #-}
+{-# LANGUAGE DataKinds #-}
 module Hardware.KansasLava.Boards.Papilio.LogicStart (
     -- * Class for the methods of the Spartan3e
     LogicStart(..)
@@ -12,6 +11,7 @@ module Hardware.KansasLava.Boards.Papilio.LogicStart (
     , Active(..)
     , SevenSegment(..)
     , Buttons(..)
+    , VGA(..)
       -- -- * Utilities for Board and Simulation use
     , switchesP
       -- , buttonsP -- TODO
@@ -22,6 +22,7 @@ import Language.KansasLava as KL
 import Hardware.KansasLava.Boards.Papilio
 import Hardware.KansasLava.Boards.Papilio.UCF
 import Hardware.KansasLava.SevenSegment
+import Hardware.KansasLava.VGA
 
 import Data.Sized.Ix hiding (all)
 import Data.Sized.Matrix hiding (all)
@@ -47,6 +48,7 @@ class Papilio fabric => LogicStart fabric where
    buttons :: fabric Buttons
    leds :: Matrix X8 (Seq Bool) -> fabric ()
    sseg :: SevenSegment CLK ActiveLow X4 -> fabric ()
+   vga :: VGA CLK X3 X3 X2 -> fabric ()
 
 ------------------------------------------------------------
 -- initialization
@@ -82,6 +84,13 @@ instance LogicStart Fabric where
       outStdLogicVector "SS_ANODES" (pack ssAnodes :: Seq (Matrix X4 Bool))
       outStdLogicVector "SS_SEGS" (pack ssSegments :: Seq (Matrix X7 Bool))
       outStdLogic "SS_DP" ssDecimalPoint
+
+  vga VGA{..} = do
+      outStdLogicVector "VGA_R" (pack vgaR :: Seq (Matrix X3 Bool))
+      outStdLogicVector "VGA_G" (pack vgaG :: Seq (Matrix X3 Bool))
+      outStdLogicVector "VGA_B" (pack vgaB :: Seq (Matrix X2 Bool))
+      outStdLogic "VGA_VSYNC" vgaVSync
+      outStdLogic "VGA_HSYNC" vgaHSync
 
 -------------------------------------------------------------
 -- Utilites that can be shared
