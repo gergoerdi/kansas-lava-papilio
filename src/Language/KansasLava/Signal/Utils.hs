@@ -6,6 +6,7 @@ module Language.KansasLava.Signal.Utils
        , counter
        , rotatorL
        , fromUnsigned
+       , toUnsigned
        ) where
 
 import Language.KansasLava
@@ -34,3 +35,6 @@ rotatorL step = fromUnsigned loop
 
 fromUnsigned :: (sig ~ Signal c, Size ix) => sig (Unsigned ix) -> Matrix ix (sig Bool)
 fromUnsigned = unpack . coerce Unsigned.toMatrix
+
+toUnsigned :: (sig ~ Signal c, Size ix) => Matrix ix (sig Bool) -> sig (Unsigned ix)
+toUnsigned = coerce Unsigned.fromMatrix . pack
