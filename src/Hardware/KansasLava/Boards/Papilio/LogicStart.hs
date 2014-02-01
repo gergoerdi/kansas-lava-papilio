@@ -48,7 +48,7 @@ class Papilio fabric => LogicStart fabric where
    buttons :: fabric Buttons
    leds :: Matrix X8 (Seq Bool) -> fabric ()
    sseg :: SevenSegment CLK ActiveLow X4 -> fabric ()
-   vga :: VGA CLK X3 X3 X2 -> fabric ()
+   vga :: RawVGA CLK X3 X3 X2 -> fabric ()
 
 ------------------------------------------------------------
 -- initialization
@@ -85,12 +85,12 @@ instance LogicStart Fabric where
       outStdLogicVector "SS_SEGS" (pack ssSegments :: Seq (Matrix X7 Bool))
       outStdLogic "SS_DP" ssDecimalPoint
 
-  vga VGA{..} = do
-      outStdLogicVector "VGA_R" (pack vgaR :: Seq (Matrix X3 Bool))
-      outStdLogicVector "VGA_G" (pack vgaG :: Seq (Matrix X3 Bool))
-      outStdLogicVector "VGA_B" (pack vgaB :: Seq (Matrix X2 Bool))
-      outStdLogic "VGA_VSYNC" vgaVSync
-      outStdLogic "VGA_HSYNC" vgaHSync
+  vga RawVGA{..} = do
+      outStdLogicVector "VGA_R" (pack vgaRawR :: Seq (Matrix X3 Bool))
+      outStdLogicVector "VGA_G" (pack vgaRawG :: Seq (Matrix X3 Bool))
+      outStdLogicVector "VGA_B" (pack vgaRawB :: Seq (Matrix X2 Bool))
+      outStdLogic "VGA_VSYNC" vgaRawVSync
+      outStdLogic "VGA_HSYNC" vgaRawHSync
 
 -------------------------------------------------------------
 -- Utilites that can be shared

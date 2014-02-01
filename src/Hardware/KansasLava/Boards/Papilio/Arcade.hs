@@ -8,7 +8,7 @@ module Hardware.KansasLava.Boards.Papilio.Arcade (
     , writeUCF
       -- * Data structures
     , Buttons(..)
-    , VGA(..)
+    , RawVGA(..)
     ) where
 
 import Language.KansasLava as KL
@@ -29,7 +29,7 @@ class Papilio fabric => Arcade fabric where
    resetButton :: fabric (Seq Bool)
    buttons :: fabric Buttons
    leds :: Matrix X4 (Seq Bool) -> fabric ()
-   vga :: VGA CLK X4 X4 X4 -> fabric ()
+   vga :: RawVGA CLK X4 X4 X4 -> fabric ()
 
 writeUCF :: FilePath -> KLEG -> IO ()
 writeUCF = copyUCF "Arcade.ucf"
@@ -45,9 +45,9 @@ instance Arcade Fabric where
 
   leds inp = outStdLogicVector "LED" (pack inp :: Seq (Matrix X4 Bool))
 
-  vga VGA{..} = do
-      outStdLogicVector "VGA_R" (pack vgaR :: Seq (Matrix X4 Bool))
-      outStdLogicVector "VGA_G" (pack vgaG :: Seq (Matrix X4 Bool))
-      outStdLogicVector "VGA_B" (pack vgaB :: Seq (Matrix X4 Bool))
-      outStdLogic "VGA_VSYNC" vgaVSync
-      outStdLogic "VGA_HSYNC" vgaHSync
+  vga RawVGA{..} = do
+      outStdLogicVector "VGA_R" (pack vgaRawR :: Seq (Matrix X4 Bool))
+      outStdLogicVector "VGA_G" (pack vgaRawG :: Seq (Matrix X4 Bool))
+      outStdLogicVector "VGA_B" (pack vgaRawB :: Seq (Matrix X4 Bool))
+      outStdLogic "VGA_VSYNC" vgaRawVSync
+      outStdLogic "VGA_HSYNC" vgaRawHSync
