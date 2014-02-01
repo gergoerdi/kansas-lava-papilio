@@ -35,6 +35,7 @@ Library
         Hardware.KansasLava.Boards.Papilio
         Hardware.KansasLava.Boards.Papilio.UCF
         Hardware.KansasLava.Boards.Papilio.LogicStart
+        Hardware.KansasLava.Boards.Papilio.Arcade
   Other-modules:
         Paths_kansas_lava_papilio
 
