@@ -18,7 +18,6 @@ import Hardware.KansasLava.Boards.Papilio.UCF
 
 import Data.Sized.Ix
 import Data.Sized.Matrix
-import Control.Applicative
 import Control.Monad (ap, liftM)
 
 data Buttons = Buttons{ buttonUp, buttonDown

@@ -5,7 +5,6 @@ module Hardware.KansasLava.Boards.Papilio.UCF (
     ) where
 
 import Language.KansasLava as KL
-import System.IO
 import Data.Char
 import System.FilePath.Posix ((</>))
 
@@ -28,7 +27,7 @@ filterUCF kleg ucf = unlines (hdr ++ lns)
       where
         ports = inputs ++ outputs
         inputs = theSrcs kleg
-        outputs = map (\ (a,b,c) -> (a,b)) $ theSinks kleg
+        outputs = map (\ (a,b,_) -> (a,b)) $ theSinks kleg
 
     getName xs
       | take 5 xs == "NET \"" = Just (takeWhile (/= '"') (drop 5 xs))
@@ -59,4 +58,3 @@ copyUCF :: FilePath -> FilePath -> KLEG -> IO ()
 copyUCF fileName dest kleg = do
     src <- getDataFileName ("ucf" </> fileName)
     copyUCFFrom src dest kleg
-
