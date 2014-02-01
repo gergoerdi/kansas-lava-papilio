@@ -37,10 +37,10 @@ commentUnless :: Bool -> String -> String
 commentUnless True ln = ln
 commentUnless False ln = "# -- " ++ ln
 
-isComment :: String -> Bool
-isComment ('#':_) = True
-isComment xs | all isSpace xs = True
-             | otherwise = False
+_isComment :: String -> Bool
+_isComment ('#':_) = True
+_isComment xs | all isSpace xs = True
+              | otherwise = False
 
 portsFrom nm ty = case toStdLogicType ty of
     SL -> [ nm ]
