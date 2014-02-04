@@ -10,9 +10,9 @@ import Data.Sized.Matrix as Matrix
 import Data.Sized.Unsigned as Unsigned
 
 data VGA clk r g b =
-    VGA{ vgaR :: Signal clk (Unsigned r)
-       , vgaG :: Signal clk (Unsigned g)
-       , vgaB :: Signal clk (Unsigned b)
+    VGA{ vgaR :: Signal clk (Enabled r)
+       , vgaG :: Signal clk (Enabled g)
+       , vgaB :: Signal clk (Enabled b)
        , vgaVSync, vgaHSync :: Signal clk Bool
        }
 
@@ -23,12 +23,16 @@ data RawVGA clk r g b =
           , vgaRawVSync, vgaRawHSync :: Signal clk Bool
           }
 
-encodeVGA :: (Size r, Size g, Size b) => VGA clk r g b -> RawVGA clk r g b
+encodeVGA :: (Size r, Size g, Size b)
+          => VGA clk (Unsigned r) (Unsigned g) (Unsigned b)
+          -> RawVGA clk r g b
 encodeVGA VGA{..} = RawVGA{..}
   where
-    vgaRawR = fromUnsigned vgaR
-    vgaRawG = fromUnsigned vgaG
-    vgaRawB = fromUnsigned vgaB
+    vgaRawR = toColors vgaR
+    vgaRawG = toColors vgaG
+    vgaRawB = toColors vgaB
 
     vgaRawVSync = vgaVSync
     vgaRawHSync = vgaHSync
+
+    toColors c = fmap (isEnabled c .&&.) $ fromUnsigned (enabledVal c)
