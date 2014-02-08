@@ -9,6 +9,7 @@ module Hardware.KansasLava.Boards.Papilio.Arcade (
       -- * Data structures
     , Buttons(..)
     , RawVGA(..)
+    , PS2(..)
     ) where
 
 import Language.KansasLava as KL
@@ -24,14 +25,17 @@ data Buttons = Buttons{ buttonUp, buttonDown
                       , buttonLeft, buttonRight :: Seq Bool
                       }
 
+data PS2 = PS2{ ps2Clock, ps2Data :: Seq Bool }
+
 class Papilio fabric => Arcade fabric where
    resetButton :: fabric (Seq Bool)
    buttons :: fabric Buttons
    leds :: Matrix X4 (Seq Bool) -> fabric ()
    vga :: RawVGA CLK X4 X4 X4 -> fabric ()
+   ps2 :: fabric (PS2, PS2)
 
 writeUCF :: FilePath -> KLEG -> IO ()
-writeUCF = copyUCF "Arcade.ucf"
+writeUCF to = copyUCF "Arcade.ucf" to (Just "CLK_32MHZ")
 
 instance Arcade Fabric where
   resetButton = inStdLogic "BTN_RESET"
@@ -50,3 +54,8 @@ instance Arcade Fabric where
       outStdLogicVector "VGA_B" (pack vgaRawB :: Seq (Matrix X4 Bool))
       outStdLogic "VGA_VSYNC" vgaRawVSync
       outStdLogic "VGA_HSYNC" vgaRawHSync
+
+  ps2 = do
+      ps2a <- PS2 `liftM` inStdLogic "PS2A_CLK" `ap` inStdLogic "PS2A_DAT"
+      ps2b <- PS2 `liftM` inStdLogic "PS2B_CLK" `ap` inStdLogic "PS2B_DAT"
+      return (ps2a, ps2b)

@@ -7,7 +7,7 @@ Description:
 Category:            Hardware
 License:             BSD3
 License-file:        LICENSE
-Copyright:           (C) 2012 Gergo Erdi
+Copyright:           (C) 2012-2014 Gergo Erdi
 Author:              Gergo Erdi
 Maintainer:          Gergo Erdi <gergo@erdi.hu>
 Stability:	     alpha
@@ -19,7 +19,8 @@ Data-files:
 Library
   Build-Depends: 
         base >= 4 && < 5,
-        kansas-lava >= 0.2.4 && < 0.2.5,
+        netlist >= 0.3.1,
+        kansas-lava >= 0.2.4.1 && < 0.2.5,
         kansas-lava-cores >= 0.1.2,
         filepath >= 1.3,
         sized-types >= 0.3.4,

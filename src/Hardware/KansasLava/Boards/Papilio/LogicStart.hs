@@ -56,7 +56,7 @@ class Papilio fabric => LogicStart fabric where
 
 -- | show out a suggested UCF file for the LogicStart, for a specific circuit.
 writeUCF :: FilePath -> KLEG -> IO ()
-writeUCF = copyUCF "LogicStart.ucf"
+writeUCF to = copyUCF "LogicStart.ucf" to (Just "CLK_32MHZ")
 
 ------------------------------------------------------------
 -- instance

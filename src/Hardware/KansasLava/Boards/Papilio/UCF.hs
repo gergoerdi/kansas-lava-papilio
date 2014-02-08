@@ -1,17 +1,18 @@
 module Hardware.KansasLava.Boards.Papilio.UCF (
-    filterUCF
+      filterUCF
     , copyUCFFrom
     , copyUCF
     ) where
 
 import Language.KansasLava as KL
 import Data.Char
+import Data.Maybe (maybeToList)
 import System.FilePath.Posix ((</>))
 
 import Paths_kansas_lava_papilio
 
-filterUCF :: KLEG -> String -> String
-filterUCF kleg ucf = unlines (hdr ++ lns)
+filterUCF :: Maybe String -> KLEG -> String -> String
+filterUCF rawClock kleg ucf = unlines (hdr ++ lns)
   where
     hdr = [ "# Generated automatically by kansas-lava-cores"
           , "#" ++ show portsUsed
@@ -23,7 +24,7 @@ filterUCF kleg ucf = unlines (hdr ++ lns)
         Nothing -> True
         Just nm -> nm `elem` portsUsed
 
-    portsUsed = concatMap (uncurry portsFrom) ports
+    portsUsed = maybeToList rawClock ++ concatMap (uncurry portsFrom) ports
       where
         ports = inputs ++ outputs
         inputs = theSrcs kleg
@@ -48,13 +49,13 @@ portsFrom nm ty = case toStdLogicType ty of
   where
     leg i = nm ++ "<" ++ show i ++ ">"
 
-copyUCFFrom :: FilePath -> FilePath -> KLEG -> IO ()
-copyUCFFrom src dest kleg = do
+copyUCFFrom :: FilePath -> FilePath -> Maybe String -> KLEG -> IO ()
+copyUCFFrom src dest rawClock kleg = do
     big_ucf <- readFile src
-    let small_ucf = filterUCF kleg big_ucf
+    let small_ucf = filterUCF rawClock kleg big_ucf
     writeFile dest small_ucf
 
-copyUCF :: FilePath -> FilePath -> KLEG -> IO ()
-copyUCF fileName dest kleg = do
+copyUCF :: FilePath -> FilePath -> Maybe String -> KLEG -> IO ()
+copyUCF fileName dest rawClock kleg = do
     src <- getDataFileName ("ucf" </> fileName)
-    copyUCFFrom src dest kleg
+    copyUCFFrom src dest rawClock kleg
