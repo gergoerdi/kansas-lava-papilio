@@ -19,8 +19,8 @@ clockRate :: Integer
 clockRate = 32 * 1000 * 1000
 
 class MonadFix fabric => Papilio fabric where
-    -- | 'board_init' sets up the use of the clock.
-    -- Always call 'board_init' first. [Required].
+    -- | 'board_init' sets up the use of default clock,
+    -- which is the native 32MHz on-board clock.
     board_init :: fabric ()
 
     -- | 'tickTock' generates 'n' pulses per second,
