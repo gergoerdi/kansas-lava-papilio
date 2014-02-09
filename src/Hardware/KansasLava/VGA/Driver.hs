@@ -17,8 +17,7 @@ import Data.Sized.Unsigned as Unsigned
 import Data.Sized.Ix
 
 data VGADriverIn clk r g b = VGADriverIn
-                             { vgaInReset :: Signal clk Bool
-                             , vgaInR :: Signal clk r
+                             { vgaInR :: Signal clk r
                              , vgaInG :: Signal clk g
                              , vgaInB :: Signal clk b
                              }
@@ -51,19 +50,11 @@ driveVGA VGAParams{..} VGADriverIn{..} = runRTL $ do
     let hEnd = reg hCount .==. pureS hMax
         vEnd = reg vCount .==. pureS vMax
 
-    CASE
-      [ IF vgaInReset $ do
-             phase := low
-             hCount := 0
-             vCount := 0
-      , OTHERWISE $ do
-             phase := bitNot (reg phase)
-
-             WHEN (reg phase) $ do
-                 hCount := mux hEnd (reg hCount + 1, 0)
-                 WHEN hEnd $ do
-                     vCount := mux vEnd (reg vCount + 1, 0)
-      ]
+    phase := bitNot (reg phase)
+    WHEN (reg phase) $ do
+        hCount := mux hEnd (reg hCount + 1, 0)
+        WHEN hEnd $ do
+            vCount := mux vEnd (reg vCount + 1, 0)
 
     let hsync = pureS hSyncStart .<=. reg hCount .&&.
                 reg hCount .<. pureS hSyncEnd
