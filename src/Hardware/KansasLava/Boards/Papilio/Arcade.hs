@@ -28,34 +28,42 @@ data Buttons = Buttons{ buttonUp, buttonDown
 data PS2 = PS2{ ps2Clock, ps2Data :: Seq Bool }
 
 class Papilio fabric => Arcade fabric where
-   resetButton :: fabric (Seq Bool)
-   buttons :: fabric Buttons
-   leds :: Matrix X4 (Seq Bool) -> fabric ()
-   vga :: RawVGA CLK X4 X4 X4 -> fabric ()
-   ps2 :: fabric (PS2, PS2)
+    -- | Setup global reset signal
+    wing_init :: fabric ()
+
+    -- | Don't use this if you also use 'wing_init' as that sets the
+    -- reset button as the global reset signal
+    resetButton :: fabric (Seq Bool)
+
+    buttons :: fabric Buttons
+    leds :: Matrix X4 (Seq Bool) -> fabric ()
+    vga :: RawVGA CLK X4 X4 X4 -> fabric ()
+    ps2 :: fabric (PS2, PS2)
 
 writeUCF :: FilePath -> KLEG -> IO ()
 writeUCF to = copyUCF "Arcade.ucf" to (Just "CLK_32MHZ")
 
 instance Arcade Fabric where
-  resetButton = inStdLogic "BTN_RESET"
+    wing_init = theRst "RESET"
 
-  buttons = Buttons
-            `liftM` inStdLogic "BTN_UP"
-            `ap`    inStdLogic "BTN_DOWN"
-            `ap`    inStdLogic "BTN_LEFT"
-            `ap`    inStdLogic "BTN_RIGHT"
+    resetButton = inStdLogic "RESET"
 
-  leds inp = outStdLogicVector "LED" (pack inp :: Seq (Matrix X4 Bool))
+    buttons = Buttons
+              `liftM` inStdLogic "BTN_UP"
+              `ap`    inStdLogic "BTN_DOWN"
+              `ap`    inStdLogic "BTN_LEFT"
+              `ap`    inStdLogic "BTN_RIGHT"
 
-  vga RawVGA{..} = do
-      outStdLogicVector "VGA_R" (pack vgaRawR :: Seq (Matrix X4 Bool))
-      outStdLogicVector "VGA_G" (pack vgaRawG :: Seq (Matrix X4 Bool))
-      outStdLogicVector "VGA_B" (pack vgaRawB :: Seq (Matrix X4 Bool))
-      outStdLogic "VGA_VSYNC" vgaRawVSync
-      outStdLogic "VGA_HSYNC" vgaRawHSync
+    leds inp = outStdLogicVector "LED" (pack inp :: Seq (Matrix X4 Bool))
 
-  ps2 = do
-      ps2a <- PS2 `liftM` inStdLogic "PS2A_CLK" `ap` inStdLogic "PS2A_DAT"
-      ps2b <- PS2 `liftM` inStdLogic "PS2B_CLK" `ap` inStdLogic "PS2B_DAT"
-      return (ps2a, ps2b)
+    vga RawVGA{..} = do
+        outStdLogicVector "VGA_R" (pack vgaRawR :: Seq (Matrix X4 Bool))
+        outStdLogicVector "VGA_G" (pack vgaRawG :: Seq (Matrix X4 Bool))
+        outStdLogicVector "VGA_B" (pack vgaRawB :: Seq (Matrix X4 Bool))
+        outStdLogic "VGA_VSYNC" vgaRawVSync
+        outStdLogic "VGA_HSYNC" vgaRawHSync
+
+    ps2 = do
+        ps2a <- PS2 `liftM` inStdLogic "PS2A_CLK" `ap` inStdLogic "PS2A_DAT"
+        ps2b <- PS2 `liftM` inStdLogic "PS2B_CLK" `ap` inStdLogic "PS2B_DAT"
+        return (ps2a, ps2b)
