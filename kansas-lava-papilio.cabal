@@ -36,7 +36,6 @@ Library
         Hardware.KansasLava.VGA
         Hardware.KansasLava.VGA.Driver
         Hardware.KansasLava.Boards.Papilio
-        Hardware.KansasLava.Boards.Papilio.DCM
         Hardware.KansasLava.Boards.Papilio.UCF
         Hardware.KansasLava.Boards.Papilio.LogicStart
         Hardware.KansasLava.Boards.Papilio.Arcade
