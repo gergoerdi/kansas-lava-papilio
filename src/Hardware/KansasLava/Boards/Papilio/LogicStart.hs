@@ -29,11 +29,10 @@ import Data.Sized.Matrix hiding (all)
 import Control.Applicative
 import Control.Monad (ap, liftM)
 
-data Buttons = Buttons
-    { buttonUp, buttonDown
-    , buttonLeft, buttonRight
-    , buttonCenter :: Seq Bool
-    }
+data Buttons clk = Buttons{ buttonUp, buttonDown
+                          , buttonLeft, buttonRight
+                          , buttonCenter :: Signal clk Bool
+                          }
 
 ------------------------------------------------------------
 -- The LogicStart class
@@ -44,9 +43,9 @@ class Papilio fabric => LogicStart fabric where
 
    ----------------------------------------------------------------------------
 
-   switches :: fabric (Matrix X8 (Seq Bool))
-   buttons :: fabric Buttons
-   leds :: Matrix X8 (Seq Bool) -> fabric ()
+   switches :: fabric (Matrix X8 (Signal CLK Bool))
+   buttons :: fabric (Buttons CLK)
+   leds :: Matrix X8 (Signal CLK Bool) -> fabric ()
    sseg :: SevenSegment CLK ActiveLow X4 -> fabric ()
    vga :: RawVGA CLK X3 X3 X2 -> fabric ()
 

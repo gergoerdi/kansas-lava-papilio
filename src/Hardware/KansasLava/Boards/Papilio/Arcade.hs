@@ -21,11 +21,11 @@ import Data.Sized.Ix
 import Data.Sized.Matrix
 import Control.Monad (ap, liftM)
 
-data Buttons = Buttons{ buttonUp, buttonDown
-                      , buttonLeft, buttonRight :: Seq Bool
-                      }
+data Buttons clk = Buttons{ buttonUp, buttonDown
+                          , buttonLeft, buttonRight :: Signal clk Bool
+                          }
 
-data PS2 = PS2{ ps2Clock, ps2Data :: Seq Bool }
+data PS2 clk = PS2{ ps2Clock, ps2Data :: Signal clk Bool }
 
 class Papilio fabric => Arcade fabric where
     -- | Setup global reset signal
@@ -33,12 +33,12 @@ class Papilio fabric => Arcade fabric where
 
     -- | Don't use this if you also use 'wing_init' as that sets the
     -- reset button as the global reset signal
-    resetButton :: fabric (Seq Bool)
+    resetButton :: fabric (Signal CLK Bool)
 
-    buttons :: fabric Buttons
-    leds :: Matrix X4 (Seq Bool) -> fabric ()
+    buttons :: fabric (Buttons CLK)
+    leds :: Matrix X4 (Signal CLK Bool) -> fabric ()
     vga :: RawVGA CLK X4 X4 X4 -> fabric ()
-    ps2 :: fabric (PS2, PS2)
+    ps2 :: fabric (PS2 CLK, PS2 CLK)
 
 writeUCF :: FilePath -> KLEG -> IO ()
 writeUCF to = copyUCF "Arcade.ucf" to (Just "CLK_32MHZ")
