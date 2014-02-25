@@ -9,6 +9,8 @@ module Language.KansasLava.Signal.Utils
        , rotatorL
        , fromUnsigned
        , toUnsigned
+       , parity
+       , whenEnabled
        ) where
 
 import Language.KansasLava
@@ -69,3 +71,13 @@ fromUnsigned = unpack . coerce Unsigned.toMatrix
 
 toUnsigned :: (sig ~ Signal c, Size ix) => Matrix ix (sig Bool) -> sig (Unsigned ix)
 toUnsigned = coerce Unsigned.fromMatrix . pack
+
+parity :: forall clk n. (Clock clk, Size n, Rep n, Integral n, Enum n)
+       => Signal clk (Unsigned n) -> Signal clk Bool
+parity x = foldr xor2 low $ map (testABit x . pureS) [minBound .. maxBound :: n]
+
+whenEnabled :: (Clock clk, Rep a)
+            => Signal clk (Enabled a)
+            -> (Signal clk a -> RTL s clk ())
+            -> RTL s clk ()
+whenEnabled sig = CASE . return . match sig
