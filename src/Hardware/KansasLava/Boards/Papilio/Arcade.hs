@@ -14,6 +14,7 @@ module Hardware.KansasLava.Boards.Papilio.Arcade (
 
 import Language.KansasLava as KL
 import Hardware.KansasLava.VGA
+import Hardware.KansasLava.PS2
 import Hardware.KansasLava.Boards.Papilio
 import Hardware.KansasLava.Boards.Papilio.UCF
 
@@ -24,8 +25,6 @@ import Control.Monad (ap, liftM)
 data Buttons clk = Buttons{ buttonUp, buttonDown
                           , buttonLeft, buttonRight :: Signal clk Bool
                           }
-
-data PS2 clk = PS2{ ps2Clock, ps2Data :: Signal clk Bool }
 
 class Papilio fabric => Arcade fabric where
     -- | Setup global reset signal

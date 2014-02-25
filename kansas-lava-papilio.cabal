@@ -33,6 +33,7 @@ Library
   Exposed-modules:
         Language.KansasLava.Signal.Utils
         Hardware.KansasLava.SevenSegment
+        Hardware.KansasLava.PS2
         Hardware.KansasLava.VGA
         Hardware.KansasLava.VGA.Driver
         Hardware.KansasLava.Boards.Papilio
