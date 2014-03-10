@@ -43,15 +43,14 @@ driveVGA :: (Clock clk, Rep r, Rep g, Rep b, Size w, Size h)
          -> VGADriverIn clk r g b
          -> VGADriverOut clk w h r g b
 driveVGA VGAParams{..} VGADriverIn{..} = runRTL $ do
-    phase <- newReg False
     hCount <- newReg 0
     vCount <- newReg 0
 
     let hEnd = reg hCount .==. pureS hMax
         vEnd = reg vCount .==. pureS vMax
 
-    phase := bitNot (reg phase)
-    WHEN (reg phase) $ do
+    let phase = iterateS bitNot False
+    WHEN phase $ do
         hCount := mux hEnd (reg hCount + 1, 0)
         WHEN hEnd $ do
             vCount := mux vEnd (reg vCount + 1, 0)
@@ -65,7 +64,7 @@ driveVGA VGAParams{..} VGADriverIn{..} = runRTL $ do
         vVisible = reg vCount .<. pureS vSize
         visible = hVisible .&&. vVisible
 
-    let vgaOutClkPhase = reg phase
+    let vgaOutClkPhase = phase
         vgaOutVBlank = reg vCount .==. pureS vSyncStart
         vgaOutX = packEnabled visible (reg hCount)
         vgaOutY = packEnabled visible (reg vCount)
