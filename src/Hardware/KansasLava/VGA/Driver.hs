@@ -65,7 +65,8 @@ driveVGA VGAParams{..} VGADriverIn{..} = runRTL $ do
         visible = hVisible .&&. vVisible
 
     let vgaOutClkPhase = phase
-        vgaOutVBlank = reg vCount .==. pureS vSyncStart
+        vgaOutVBlank = phase .&&. reg hCount .==. 0 .&&.
+                       reg vCount .==. pureS vSyncStart
         vgaOutX = packEnabled visible (reg hCount)
         vgaOutY = packEnabled visible (reg vCount)
         vgaOut = VGA{ vgaR = packEnabled visible vgaInR
