@@ -40,7 +40,7 @@ class Papilio fabric => Arcade fabric where
     ps2 :: fabric (PS2 CLK, PS2 CLK)
 
 writeUCF :: FilePath -> KLEG -> IO ()
-writeUCF to = copyUCF "Arcade.ucf" to (Just "CLK_32MHZ")
+writeUCF = copyUCF "Arcade.ucf" (Just "CLK_32MHZ")
 
 instance Arcade Fabric where
     wing_init = theRst "RESET"
