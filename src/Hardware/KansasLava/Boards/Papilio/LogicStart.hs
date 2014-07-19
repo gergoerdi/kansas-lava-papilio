@@ -6,7 +6,7 @@ module Hardware.KansasLava.Boards.Papilio.LogicStart (
     -- * Initialization, and global settings.
     , clockRate
     , board_init
-    , writeUCF
+    , toUCF
       -- * Data structures
     , Active(..)
     , SevenSegment(..)
@@ -20,7 +20,7 @@ module Hardware.KansasLava.Boards.Papilio.LogicStart (
 
 import Language.KansasLava as KL
 import Hardware.KansasLava.Boards.Papilio
-import Hardware.KansasLava.Boards.Papilio.UCF
+import qualified Hardware.KansasLava.Boards.Papilio.UCF as Papilio
 import Hardware.KansasLava.SevenSegment
 import Hardware.KansasLava.VGA
 
@@ -53,9 +53,8 @@ class Papilio fabric => LogicStart fabric where
 -- initialization
 ------------------------------------------------------------
 
--- | show out a suggested UCF file for the LogicStart, for a specific circuit.
-writeUCF :: FilePath -> KLEG -> IO ()
-writeUCF = copyUCF "LogicStart.ucf" (Just "CLK_32MHZ")
+toUCF :: KLEG -> IO String
+toUCF = Papilio.toUCF "LogicStart.ucf" (Just "CLK_32MHZ")
 
 ------------------------------------------------------------
 -- instance

@@ -1,12 +1,15 @@
-module Hardware.KansasLava.Boards.Papilio.UCF (copyUCF) where
+module Hardware.KansasLava.Boards.Papilio.UCF (toUCF) where
 
-import Hardware.KansasLava.Boards.UCF (copyUCFFrom)
 import Language.KansasLava
+import Hardware.KansasLava.Boards.UCF (filterUCF)
 import System.FilePath.Posix ((</>))
 
 import Paths_kansas_lava_papilio
 
-copyUCF :: FilePath -> Maybe String -> FilePath -> KLEG -> IO ()
-copyUCF fileName rawClock dest kleg = do
-    src <- getDataFileName ("ucf" </> fileName)
-    copyUCFFrom src rawClock dest kleg
+getUCF :: FilePath -> IO String
+getUCF fileName = getDataFileName ("ucf" </> fileName)
+
+toUCF :: FilePath -> Maybe String -> KLEG -> IO String
+toUCF fileName rawClock kleg = do
+    src <- readFile =<< getUCF fileName
+    return $ filterUCF rawClock kleg src

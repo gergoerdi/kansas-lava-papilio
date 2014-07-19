@@ -5,7 +5,7 @@ module Hardware.KansasLava.Boards.Papilio.Arcade (
     -- * Initialization, and global settings.
     , clockRate
     , board_init
-    , writeUCF
+    , toUCF
       -- * Data structures
     , Buttons(..)
     , RawVGA(..)
@@ -16,7 +16,7 @@ import Language.KansasLava as KL
 import Hardware.KansasLava.VGA
 import Hardware.KansasLava.PS2
 import Hardware.KansasLava.Boards.Papilio
-import Hardware.KansasLava.Boards.Papilio.UCF
+import qualified Hardware.KansasLava.Boards.Papilio.UCF as Papilio
 
 import Data.Sized.Ix
 import Data.Sized.Matrix
@@ -39,8 +39,8 @@ class Papilio fabric => Arcade fabric where
     vga :: RawVGA CLK X4 X4 X4 -> fabric ()
     ps2 :: fabric (PS2 CLK, PS2 CLK)
 
-writeUCF :: FilePath -> KLEG -> IO ()
-writeUCF = copyUCF "Arcade.ucf" (Just "CLK_32MHZ")
+toUCF :: KLEG -> IO String
+toUCF = Papilio.toUCF "Arcade.ucf" (Just "CLK_32MHZ")
 
 instance Arcade Fabric where
     wing_init = theRst "RESET"
