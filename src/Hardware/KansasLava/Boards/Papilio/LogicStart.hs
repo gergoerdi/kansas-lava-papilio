@@ -1,22 +1,23 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
-module Hardware.KansasLava.Boards.Papilio.LogicStart (
-    -- * Class for the methods of the Spartan3e
-    LogicStart(..)
-    -- * Initialization, and global settings.
-    , clockRate
-    , board_init
-    , toUCF
-      -- * Data structures
-    , Active(..)
-    , SevenSegment(..)
-    , Buttons(..)
-    , VGA(..)
-      -- -- * Utilities for Board and Simulation use
-    , switchesP
-      -- , buttonsP -- TODO
-    , ledsP
-    ) where
+module Hardware.KansasLava.Boards.Papilio.LogicStart
+       ( Model(..)
+         -- * Class for the methods of the Spartan3e
+       , LogicStart(..)
+         -- * Initialization, and global settings.
+       , clockRate
+       , board_init
+       , toUCF
+         -- * Data structures
+       , Active(..)
+       , SevenSegment(..)
+       , Buttons(..)
+       , VGA(..)
+         -- -- * Utilities for Board and Simulation use
+       , switchesP
+         -- , buttonsP -- TODO
+       , ledsP
+       ) where
 
 import Language.KansasLava as KL
 import Hardware.KansasLava.Boards.Papilio
@@ -53,8 +54,13 @@ class Papilio fabric => LogicStart fabric where
 -- initialization
 ------------------------------------------------------------
 
-toUCF :: KLEG -> IO String
-toUCF = Papilio.toUCF "LogicStart.ucf" (Just "CLK_32MHZ")
+toUCF :: Model -> KLEG -> IO String
+toUCF model = Papilio.toUCF fileName (Just "CLK_32MHZ")
+  where
+    fileName = "Arcade-" ++ designator ++ ".ucf"
+    designator = case model of
+        PapilioOne -> "One"
+        PapilioPro -> "Pro"
 
 ------------------------------------------------------------
 -- instance

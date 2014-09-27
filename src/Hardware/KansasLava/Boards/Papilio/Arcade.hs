@@ -1,7 +1,8 @@
 {-# LANGUAGE RecordWildCards #-}
 module Hardware.KansasLava.Boards.Papilio.Arcade (
+    Model(..)
     -- * Class for the methods of the Spartan3e
-    Arcade(..)
+    , Arcade(..)
     -- * Initialization, and global settings.
     , clockRate
     , board_init
@@ -39,8 +40,13 @@ class Papilio fabric => Arcade fabric where
     vga :: RawVGA CLK X4 X4 X4 -> fabric ()
     ps2 :: fabric (PS2 CLK, PS2 CLK)
 
-toUCF :: KLEG -> IO String
-toUCF = Papilio.toUCF "Arcade.ucf" (Just "CLK_32MHZ")
+toUCF :: Model -> KLEG -> IO String
+toUCF model = Papilio.toUCF fileName (Just "CLK_32MHZ")
+  where
+    fileName = "Arcade-" ++ designator ++ ".ucf"
+    designator = case model of
+        PapilioOne -> "One"
+        PapilioPro -> "Pro"
 
 instance Arcade Fabric where
     wing_init = theRst "RESET"

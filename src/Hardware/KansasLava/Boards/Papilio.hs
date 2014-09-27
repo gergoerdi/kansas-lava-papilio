@@ -1,18 +1,22 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds, KindSignatures #-}
-module Hardware.KansasLava.Boards.Papilio (
-    -- * Class for the methods of the Papilio
-    Papilio(..)
-    -- * Initialization, and global settings.
-    , clockRate
-    ) where
+module Hardware.KansasLava.Boards.Papilio
+       ( Model(..)
+         -- * Class for the methods of the Papilio
+       , Papilio(..)
+         -- * Initialization, and global settings.
+       , clockRate
+       ) where
 
 import Language.KansasLava as KL
 import Hardware.KansasLava.Rate
 
 import Data.Sized.Ix hiding (all)
 import Control.Monad.Fix
+
+data Model = PapilioOne
+           | PapilioPro
 
 -- | The clock rate on the Papilio (32MHz), in hertz.
 clockRate :: Integer
