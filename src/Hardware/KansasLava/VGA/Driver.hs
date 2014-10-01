@@ -8,6 +8,8 @@ module Hardware.KansasLava.VGA.Driver
        , driveVGA
          -- * Timing parameters for predefined VGA modes
        , vga640x480at60
+       , vga800x600at72
+       , vga800x600at60
        ) where
 
 import Language.KansasLava
@@ -97,5 +99,17 @@ driveVGA VGAParams{..} VGADriverIn{..} = runRTL $ do
 -- | VGA 640*480@60Hz, 25.175 MHz pixel clock
 vga640x480at60 :: VGAParams X10 X10
 vga640x480at60 = VGAParams{ vgaHorizTiming = VGATiming 640 16 96 48
-                          , vgaVertTiming  = VGATiming 480 16  2 33
+                          , vgaVertTiming  = VGATiming 480 10  2 33
+                          }
+
+-- | VGA 800x600@72Hz, 50 MHz pixel clock
+vga800x600at72 :: VGAParams X11 X10
+vga800x600at72 = VGAParams{ vgaHorizTiming = VGATiming 800 56 120 64
+                          , vgaVertTiming  = VGATiming 600 37   6 23
+                          }
+
+-- | VGA 800x600@60Hz, 40 MHz pixel clock
+vga800x600at60 :: VGAParams X11 X10
+vga800x600at60 = VGAParams{ vgaHorizTiming = VGATiming 800 40 128 88
+                          , vgaVertTiming  = VGATiming 600  1   4 23
                           }
