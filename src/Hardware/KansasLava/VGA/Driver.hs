@@ -39,19 +39,21 @@ data VGAParams w h = VGAParams
 
 data VGATiming a = VGATiming{ visibleSize, pre, syncPulse, post :: Unsigned a }
 
--- | Assumes a circuit clock at double the frequency of the pixel clock
-driveVGA :: (Clock clk, Rep r, Rep g, Rep b, Size w, Size h)
-         => VGAParams w h
+driveVGA :: (Clock clk, Rep n, Eq n, Num n, Rep r, Rep g, Rep b, Size w, Size h)
+         => n                           -- ^ clock divider
+         -> VGAParams w h
          -> VGADriverIn clk r g b
          -> VGADriverOut clk w h r g b
-driveVGA VGAParams{..} VGADriverIn{..} = runRTL $ do
+driveVGA divider VGAParams{..} VGADriverIn{..} = runRTL $ do
     hCount <- newReg 0
     vCount <- newReg 0
 
     let hEnd = reg hCount .==. pureS hMax
         vEnd = reg vCount .==. pureS vMax
 
-    let phase = iterateS bitNot False
+    let counter = iterateS (\s -> mux (s + 1 .==. pureS divider) (s + 1, 0)) 0
+        phase = counter .==. 0
+
     WHEN phase $ do
         hCount := mux hEnd (reg hCount + 1, 0)
         WHEN hEnd $ do
