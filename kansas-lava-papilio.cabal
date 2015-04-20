@@ -1,5 +1,5 @@
 Name:               kansas-lava-papilio
-Version:            0.2.1
+Version:            0.3.0
 Synopsis:           Kansas Lava support files for the Papilio FPGA board
 Description:
         IO definitions of the Papilio FPGA board and its Wings and MegaWings

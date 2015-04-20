@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE RecordWildCards #-}
 module Hardware.KansasLava.VGA.Driver
        ( -- * Generic VGA driver
@@ -39,19 +40,22 @@ data VGAParams w h = VGAParams
 
 data VGATiming a = VGATiming{ visibleSize, pre, syncPulse, post :: Unsigned a }
 
-driveVGA :: (Clock clk, Rep n, Eq n, Num n, Rep r, Rep g, Rep b, Size w, Size h)
-         => n                           -- ^ clock divider
+driveVGA :: forall clk n r g b w h.
+            (Clock clk,
+             Rep n, Eq n, Num n, Bounded n,
+             Rep r, Rep g, Rep b, Size w, Size h)
+         => Witness n                           -- ^ clock divider
          -> VGAParams w h
          -> VGADriverIn clk r g b
          -> VGADriverOut clk w h r g b
-driveVGA divider VGAParams{..} VGADriverIn{..} = runRTL $ do
+driveVGA _divider VGAParams{..} VGADriverIn{..} = runRTL $ do
     hCount <- newReg 0
     vCount <- newReg 0
 
     let hEnd = reg hCount .==. pureS hMax
         vEnd = reg vCount .==. pureS vMax
 
-    let counter = iterateS (\s -> mux (s + 1 .==. pureS divider) (s + 1, 0)) 0
+    let counter = register (0 :: n) $ loopingIncS counter
         phase = counter .==. 0
 
     WHEN phase $ do
