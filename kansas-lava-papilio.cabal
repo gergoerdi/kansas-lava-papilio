@@ -1,5 +1,5 @@
 Name:               kansas-lava-papilio
-Version:            0.2.0
+Version:            0.2.1
 Synopsis:           Kansas Lava support files for the Papilio FPGA board
 Description:
         IO definitions of the Papilio FPGA board and its Wings and MegaWings
@@ -46,7 +46,6 @@ Library
 
   Hs-Source-Dirs: src
   Other-modules:
-  -- Ghc-Options: -fcontext-stack=100
   Ghc-Options: -Werror -fwarn-unused-imports -fwarn-unused-matches -fwarn-unused-binds
   default-language:    Haskell2010
 
