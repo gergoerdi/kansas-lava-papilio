@@ -40,6 +40,7 @@ Library
         Hardware.KansasLava.Boards.Papilio.UCF
         Hardware.KansasLava.Boards.Papilio.LogicStart
         Hardware.KansasLava.Boards.Papilio.Arcade
+        Hardware.KansasLava.Xilinx.DCM
   Other-modules:
         Paths_kansas_lava_papilio
 
