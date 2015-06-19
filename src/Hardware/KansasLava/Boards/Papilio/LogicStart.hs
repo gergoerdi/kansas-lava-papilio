@@ -29,6 +29,7 @@ import Data.Sized.Ix hiding (all)
 import Data.Sized.Matrix hiding (all)
 import Control.Applicative
 import Control.Monad (ap, liftM)
+import Prelude -- https://ghc.haskell.org/trac/ghc/wiki/Migration/7.10#GHCsaysTheimportof...isredundant
 
 data Buttons clk = Buttons{ buttonUp, buttonDown
                           , buttonLeft, buttonRight
