@@ -17,6 +17,7 @@ import Data.Sized.Matrix as Matrix
 import Data.Sized.Unsigned as Unsigned
 import Data.Maybe (isJust, fromMaybe)
 import Control.Applicative
+import Prelude -- https://ghc.haskell.org/trac/ghc/wiki/Migration/7.10#GHCsaysTheimportof...isredundant
 
 data Active = ActiveHigh | ActiveLow
 
