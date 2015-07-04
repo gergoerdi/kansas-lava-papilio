@@ -57,7 +57,7 @@ class Papilio fabric => LogicStart fabric where
 toUCF :: Model -> KLEG -> IO String
 toUCF model = Papilio.toUCF fileName (Just "CLK_32MHZ")
   where
-    fileName = "Arcade-" ++ designator ++ ".ucf"
+    fileName = "LogicStart-" ++ designator ++ ".ucf"
     designator = case model of
         PapilioOne -> "One"
         PapilioPro -> "Pro"
