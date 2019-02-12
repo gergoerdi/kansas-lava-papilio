@@ -4,7 +4,13 @@ packages:
   - '.'
 
 extra-deps:
-  - kansas-lava-0.2.4.5
+  # kansas-lava-0.2.4.5
+  #   built from on kansas-lava-0.2.4 branch of the repo
+  #   (commit is in that branch)
+  - git: git@github.com:ret/kansas-lava.git
+    commit: c41d1272b06d9586e79bd179a3fa5d30756bd9b3
+  #- kansas-lava-0.2.4.5
+
   - kansas-lava-cores-0.1.2.2
 
   - data-reify-0.6
